@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notion Stoppuhr & Timer</title>
+
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: rgba(255, 255, 255, 0.94);
+      --section: rgba(55, 53, 47, 0.035);
+      --text: #2f2f2f;
+      --muted: #787774;
+      --border: rgba(55, 53, 47, 0.16);
+      --button: #2f2f2f;
+      --button-text: #ffffff;
+      --secondary: rgba(55, 53, 47, 0.08);
+      --danger: #d44c47;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: rgba(32, 32, 32, 0.95);
+        --section: rgba(255, 255, 255, 0.035);
+        --text: #f2f2f2;
+        --muted: #a7a7a7;
+        --border: rgba(255, 255, 255, 0.14);
+        --button: #f2f2f2;
+        --button-text: #222222;
+        --secondary: rgba(255, 255, 255, 0.10);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background: transparent;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      color: var(--text);
+    }
+
+    .widget {
+      width: min(100%, 580px);
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--bg);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .master-row {
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .section {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--section);
+      display: flex;
+      flex-direction: column;
+      gap: 17px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .display {
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      font-size: clamp(42px, 11vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 1;
+      padding: 10px 0;
+    }
+
+    .milliseconds {
+      color: var(--muted);
+      font-size: 0.52em;
+      margin-left: 4px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+      transition:
+        transform 120ms ease,
+        opacity 120ms ease,
+        background 120ms ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .primary {
+      background: var(--button);
+      color: var(--button-text);
+    }
+
+    .secondary {
+      background: var(--secondary);
+      color: var(--text);
+    }
+
+    .master-button {
+      padding: 9px 13px;
+      font-size: 12px;
+      background: var(--secondary);
+      color: var(--text);
+    }
+
+    .sound-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .sound-controls {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    input[type="range"] {
+      width: 92px;
+      accent-color: var(--text);
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+    }
+
+    .toggle input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--text);
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input[type="number"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+      outline: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--text);
+    }
+
+    .adjustments {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .adjustment-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .adjustment-row button {
+      padding: 9px 5px;
+      font-size: 12px;
+      background: var(--secondary);
+      color: var(--text);
+    }
+
+    .adjustment-row.negative button {
+      color: var(--muted);
+    }
+
+    .alarm-button {
+      display: none;
+      grid-column: 1 / -1;
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .finished .timer-display {
+      color: var(--danger);
+    }
+
+    .hint {
+      margin: -5px 0 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 420px) {
+      .widget {
+        padding: 10px;
+      }
+
+      .section {
+        padding: 17px;
+      }
+
+      .sound-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="widget" id="widget">
+    <div class="master-row">
+      <button class="master-button master-toggle" type="button">
+        ⏸ Beide pausieren
+      </button>
+    </div>
+
+    <!-- STOPPUHR -->
+    <section class="section">
+      <div class="title-row">
+        <h1>Stoppuhr</h1>
+        <span class="status" id="stopwatchStatus">Bereit</span>
+      </div>
+
+      <div class="display" aria-live="polite">
+        <span id="stopwatchMainTime">00:00:00</span><span class="milliseconds" id="stopwatchMilliseconds">.00</span>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="stopwatchStartPause" type="button">Start</button>
+        <button class="secondary" id="stopwatchReset" type="button">Zurücksetzen</button>
+      </div>
+
+      <div class="sound-row">
+        <label class="toggle">
+          <input type="checkbox" id="alphaEnabled" checked />
+          Alpha-Waves
+        </label>
+
+        <div class="sound-controls">
+          <span>Leise</span>
+          <input
+            type="range"
+            id="alphaVolume"
+            min="0"
+            max="0.06"
+            step="0.002"
+            value="0.016"
+            aria-label="Alpha-Waves-Lautstärke"
+          />
+        </div>
+      </div>
+
+      <p class="hint">Für den Binaural-Effekt Kopfhörer verwenden.</p>
+    </section>
+
+    <!-- TIMER -->
+    <section class="section" id="timerSection">
+      <div class="title-row">
+        <h1>Timer</h1>
+        <span class="status" id="timerStatus">Bereit</span>
+      </div>
+
+      <div class="inputs">
+        <div class="field">
+          <label for="timerHours">Stunden</label>
+          <input id="timerHours" type="number" min="0" max="99" value="0" />
+        </div>
+
+        <div class="field">
+          <label for="timerMinutes">Minuten</label>
+          <input id="timerMinutes" type="number" min="0" max="59" value="25" />
+        </div>
+
+        <div class="field">
+          <label for="timerSeconds">Sekunden</label>
+          <input id="timerSeconds" type="number" min="0" max="59" value="0" />
+        </div>
+      </div>
+
+      <div class="display timer-display" id="timerDisplay">00:25:00</div>
+
+      <div class="adjustments" aria-label="Timerzeit anpassen">
+        <div class="adjustment-row">
+          <button type="button" data-adjust="1">+1 min</button>
+          <button type="button" data-adjust="5">+5 min</button>
+          <button type="button" data-adjust="10">+10 min</button>
+          <button type="button" data-adjust="30">+30 min</button>
+        </div>
+
+        <div class="adjustment-row negative">
+          <button type="button" data-adjust="-1">−1 min</button>
+          <button type="button" data-adjust="-5">−5 min</button>
+          <button type="button" data-adjust="-10">−10 min</button>
+          <button type="button" data-adjust="-30">−30 min</button>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="timerStartPause" type="button">Start</button>
+        <button class="secondary" id="timerReset" type="button">Zurücksetzen</button>
+        <button class="alarm-button" id="stopAlarm" type="button">Alarm stoppen</button>
+      </div>
+
+      <div class="sound-row">
+        <label class="toggle">
+          <input type="checkbox" id="alarmEnabled" checked />
+          Alarmton
+        </label>
+
+        <div class="sound-controls">
+          <span>Lautstärke</span>
+          <input
+            type="range"
+            id="alarmVolume"
+            min="0"
+            max="0.35"
+            step="0.01"
+            value="0.14"
+            aria-label="Alarm-Lautstärke"
+          />
+        </div>
+      </div>
+    </section>
+
+    <div class="master-row">
+      <button class="master-button master-toggle" type="button">
+        ⏸ Beide pausieren
+      </button>
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    // ------------------------------------------------------------
+    // Gemeinsames Audio
+    // ------------------------------------------------------------
+
+    let audioContext = null;
+
+    function getAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      return audioContext;
+    }
+
+    // ------------------------------------------------------------
+    // Stoppuhr
+    // ------------------------------------------------------------
+
+    const stopwatchMainTime = document.getElementById("stopwatchMainTime");
+    const stopwatchMilliseconds = document.getElementById("stopwatchMilliseconds");
+    const stopwatchStartPause = document.getElementById("stopwatchStartPause");
+    const stopwatchReset = document.getElementById("stopwatchReset");
+    const stopwatchStatus = document.getElementById("stopwatchStatus");
+    const alphaEnabled = document.getElementById("alphaEnabled");
+    const alphaVolume = document.getElementById("alphaVolume");
+
+    let stopwatchRunning = false;
+    let stopwatchStartTimestamp = 0;
+    let stopwatchElapsedBeforeStart = 0;
+    let stopwatchAnimationId = null;
+
+    let alphaNodes = null;
+
+    function startAlphaSound() {
+      if (
+        alphaNodes ||
+        !stopwatchRunning ||
+        !alphaEnabled.checked ||
+        Number(alphaVolume.value) <= 0
+      ) {
+        return;
+      }
+
+      const ctx = getAudioContext();
+      const masterGain = ctx.createGain();
+
+      // 200 Hz links und 210 Hz rechts erzeugen eine Differenz von 10 Hz,
+      // also einen typischen Alpha-Bereich-Binaural-Beat.
+      const leftOscillator = ctx.createOscillator();
+      const rightOscillator = ctx.createOscillator();
+      const leftPanner = ctx.createStereoPanner();
+      const rightPanner = ctx.createStereoPanner();
+      const leftGain = ctx.createGain();
+      const rightGain = ctx.createGain();
+
+      leftOscillator.type = "sine";
+      rightOscillator.type = "sine";
+      leftOscillator.frequency.value = 200;
+      rightOscillator.frequency.value = 210;
+
+      leftPanner.pan.value = -1;
+      rightPanner.pan.value = 1;
+
+      leftGain.gain.value = 0.5;
+      rightGain.gain.value = 0.5;
+
+      masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      masterGain.gain.exponentialRampToValueAtTime(
+        Math.max(0.0001, Number(alphaVolume.value)),
+        ctx.currentTime + 0.4
+      );
+
+      leftOscillator.connect(leftGain);
+      leftGain.connect(leftPanner);
+      leftPanner.connect(masterGain);
+
+      rightOscillator.connect(rightGain);
+      rightGain.connect(rightPanner);
+      rightPanner.connect(masterGain);
+
+      masterGain.connect(ctx.destination);
+
+      leftOscillator.start();
+      rightOscillator.start();
+
+      alphaNodes = {
+        leftOscillator,
+        rightOscillator,
+        masterGain
+      };
+    }
+
+    function stopAlphaSound() {
+      if (!alphaNodes || !audioContext) return;
+
+      const nodes = alphaNodes;
+      alphaNodes = null;
+      const now = audioContext.currentTime;
+
+      try {
+        nodes.masterGain.gain.cancelScheduledValues(now);
+        nodes.masterGain.gain.setValueAtTime(
+          Math.max(0.0001, nodes.masterGain.gain.value),
+          now
+        );
+        nodes.masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+        nodes.leftOscillator.stop(now + 0.14);
+        nodes.rightOscillator.stop(now + 0.14);
+      } catch (error) {
+        console.warn("Alpha-Sound konnte nicht sauber beendet werden:", error);
+      }
+    }
+
+    function updateAlphaVolume() {
+      if (!alphaNodes || !audioContext) return;
+
+      const now = audioContext.currentTime;
+      alphaNodes.masterGain.gain.cancelScheduledValues(now);
+      alphaNodes.masterGain.gain.setTargetAtTime(
+        Math.max(0.0001, Number(alphaVolume.value)),
+        now,
+        0.05
+      );
+
+      if (Number(alphaVolume.value) <= 0) {
+        stopAlphaSound();
+      }
+    }
+
+    function formatStopwatch(millisecondsTotal) {
+      const totalCentiseconds = Math.floor(millisecondsTotal / 10);
+      const centiseconds = totalCentiseconds % 100;
+      const totalSeconds = Math.floor(totalCentiseconds / 100);
+      const seconds = totalSeconds % 60;
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const minutes = totalMinutes % 60;
+      const hours = Math.floor(totalMinutes / 60);
+
+      return {
+        main: [hours, minutes, seconds]
+          .map(value => String(value).padStart(2, "0"))
+          .join(":"),
+        fraction: String(centiseconds).padStart(2, "0")
+      };
+    }
+
+    function renderStopwatch() {
+      const elapsed = stopwatchRunning
+        ? stopwatchElapsedBeforeStart + performance.now() - stopwatchStartTimestamp
+        : stopwatchElapsedBeforeStart;
+
+      const formatted = formatStopwatch(elapsed);
+      stopwatchMainTime.textContent = formatted.main;
+      stopwatchMilliseconds.textContent = "." + formatted.fraction;
+
+      if (stopwatchRunning) {
+        stopwatchAnimationId = requestAnimationFrame(renderStopwatch);
+      }
+    }
+
+    function startStopwatch() {
+      getAudioContext();
+      stopwatchStartTimestamp = performance.now();
+      stopwatchRunning = true;
+      stopwatchStartPause.textContent = "Pause";
+      stopwatchStatus.textContent = "Läuft";
+      startAlphaSound();
+      renderStopwatch();
+    }
+
+    function pauseStopwatch() {
+      if (!stopwatchRunning) return;
+
+      stopwatchElapsedBeforeStart += performance.now() - stopwatchStartTimestamp;
+      stopwatchRunning = false;
+      cancelAnimationFrame(stopwatchAnimationId);
+      stopAlphaSound();
+      stopwatchStartPause.textContent = "Weiter";
+      stopwatchStatus.textContent = "Pausiert";
+      renderStopwatch();
+    }
+
+    function toggleStopwatch() {
+      if (masterPaused) return;
+
+      if (stopwatchRunning) {
+        pauseStopwatch();
+      } else {
+        startStopwatch();
+      }
+    }
+
+    function resetStopwatch() {
+      stopwatchRunning = false;
+      stopwatchElapsedBeforeStart = 0;
+      stopwatchStartTimestamp = 0;
+      cancelAnimationFrame(stopwatchAnimationId);
+      stopAlphaSound();
+      stopwatchStartPause.textContent = "Start";
+      stopwatchStatus.textContent = "Bereit";
+      resumeStopwatchAfterMaster = false;
+      renderStopwatch();
+    }
+
+    stopwatchStartPause.addEventListener("click", toggleStopwatch);
+    stopwatchReset.addEventListener("click", resetStopwatch);
+
+    alphaEnabled.addEventListener("change", () => {
+      if (stopwatchRunning && alphaEnabled.checked) {
+        getAudioContext();
+        startAlphaSound();
+      } else {
+        stopAlphaSound();
+      }
+    });
+
+    alphaVolume.addEventListener("input", () => {
+      if (
+        stopwatchRunning &&
+        alphaEnabled.checked &&
+        Number(alphaVolume.value) > 0 &&
+        !alphaNodes
+      ) {
+        startAlphaSound();
+      } else {
+        updateAlphaVolume();
+      }
+    });
+
+    // ------------------------------------------------------------
+    // Timer
+    // ------------------------------------------------------------
+
+    const widget = document.getElementById("widget");
+    const timerSection = document.getElementById("timerSection");
+    const timerHours = document.getElementById("timerHours");
+    const timerMinutes = document.getElementById("timerMinutes");
+    const timerSeconds = document.getElementById("timerSeconds");
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStartPause = document.getElementById("timerStartPause");
+    const timerReset = document.getElementById("timerReset");
+    const timerStatus = document.getElementById("timerStatus");
+    const stopAlarmButton = document.getElementById("stopAlarm");
+    const alarmEnabled = document.getElementById("alarmEnabled");
+    const alarmVolume = document.getElementById("alarmVolume");
+
+    let timerRunning = false;
+    let timerRemainingMs = getInputDuration();
+    let timerEndTimestamp = null;
+    let timerIntervalId = null;
+    let alarmIntervalId = null;
+
+    function clamp(value, minimum, maximum) {
+      return Math.min(Math.max(Number(value) || 0, minimum), maximum);
+    }
+
+    function getInputDuration() {
+      const hours = clamp(timerHours.value, 0, 99);
+      const minutes = clamp(timerMinutes.value, 0, 59);
+      const seconds = clamp(timerSeconds.value, 0, 59);
+
+      return ((hours * 3600) + (minutes * 60) + seconds) * 1000;
+    }
+
+    function formatTimer(milliseconds) {
+      const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
+      const seconds = totalSeconds % 60;
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const minutes = totalMinutes % 60;
+      const hours = Math.floor(totalMinutes / 60);
+
+      return [hours, minutes, seconds]
+        .map(value => String(value).padStart(2, "0"))
+        .join(":");
+    }
+
+    function renderTimer() {
+      timerDisplay.textContent = formatTimer(timerRemainingMs);
+    }
+
+    function syncTimerFromInputs() {
+      if (timerRunning) return;
+
+      stopAlarm();
+      timerRemainingMs = getInputDuration();
+      timerStatus.textContent =
+        timerRemainingMs > 0 ? "Bereit" : "Zeit einstellen";
+      renderTimer();
+    }
+
+    function playAlarmPulse() {
+      if (!alarmEnabled.checked || Number(alarmVolume.value) <= 0) return;
+
+      const ctx = getAudioContext();
+      const now = ctx.currentTime;
+
+      [0, 0.18, 0.36].forEach((delay, index) => {
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        oscillator.type = index === 1 ? "square" : "sine";
+        oscillator.frequency.setValueAtTime(
+          index === 1 ? 880 : 660,
+          now + delay
+        );
+
+        gain.gain.setValueAtTime(
+          Number(alarmVolume.value),
+          now + delay
+        );
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          now + delay + 0.13
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.start(now + delay);
+        oscillator.stop(now + delay + 0.14);
+      });
+    }
+
+    function startAlarm() {
+      stopAlarm();
+      timerSection.classList.add("finished");
+      stopAlarmButton.style.display = "block";
+      playAlarmPulse();
+      alarmIntervalId = setInterval(playAlarmPulse, 1100);
+    }
+
+    function stopAlarm() {
+      if (alarmIntervalId) {
+        clearInterval(alarmIntervalId);
+        alarmIntervalId = null;
+      }
+
+      stopAlarmButton.style.display = "none";
+      timerSection.classList.remove("finished");
+    }
+
+    function timerTick() {
+      timerRemainingMs = Math.max(0, timerEndTimestamp - Date.now());
+      renderTimer();
+
+      if (timerRemainingMs <= 0) {
+        finishTimer();
+      }
+    }
+
+    function startTimer() {
+      getAudioContext();
+      stopAlarm();
+
+      if (timerRemainingMs <= 0) {
+        timerRemainingMs = getInputDuration();
+      }
+
+      if (timerRemainingMs <= 0) {
+        timerStatus.textContent = "Zeit einstellen";
+        return;
+      }
+
+      timerEndTimestamp = Date.now() + timerRemainingMs;
+      timerRunning = true;
+      timerStartPause.textContent = "Pause";
+      timerStatus.textContent = "Läuft";
+      timerIntervalId = setInterval(timerTick, 100);
+      timerTick();
+    }
+
+    function pauseTimer() {
+      if (!timerRunning) return;
+
+      timerRemainingMs = Math.max(0, timerEndTimestamp - Date.now());
+      timerRunning = false;
+      clearInterval(timerIntervalId);
+      timerIntervalId = null;
+      timerStartPause.textContent = "Weiter";
+      timerStatus.textContent = "Pausiert";
+      renderTimer();
+    }
+
+    function toggleTimer() {
+      if (masterPaused) return;
+
+      if (timerRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function finishTimer() {
+      timerRunning = false;
+      clearInterval(timerIntervalId);
+      timerIntervalId = null;
+      timerRemainingMs = 0;
+      resumeTimerAfterMaster = false;
+      renderTimer();
+      timerStartPause.textContent = "Start";
+      timerStatus.textContent = "Fertig";
+      startAlarm();
+    }
+
+    function resetTimer() {
+      timerRunning = false;
+      clearInterval(timerIntervalId);
+      timerIntervalId = null;
+      stopAlarm();
+      timerRemainingMs = getInputDuration();
+      resumeTimerAfterMaster = false;
+      timerStartPause.textContent = "Start";
+      timerStatus.textContent =
+        timerRemainingMs > 0 ? "Bereit" : "Zeit einstellen";
+      renderTimer();
+    }
+
+    function adjustTimer(minutes) {
+      stopAlarm();
+
+      const delta = Number(minutes) * 60 * 1000;
+
+      if (timerRunning) {
+        timerRemainingMs = Math.max(
+          0,
+          timerEndTimestamp - Date.now() + delta
+        );
+
+        if (timerRemainingMs <= 0) {
+          finishTimer();
+          return;
+        }
+
+        timerEndTimestamp = Date.now() + timerRemainingMs;
+        timerStatus.textContent = "Läuft";
+      } else {
+        timerRemainingMs = Math.max(0, timerRemainingMs + delta);
+        timerStatus.textContent =
+          timerRemainingMs > 0
+            ? (masterPaused ? "Gemeinsam pausiert" : "Bereit")
+            : "Zeit einstellen";
+      }
+
+      renderTimer();
+    }
+
+    [timerHours, timerMinutes, timerSeconds].forEach(input => {
+      input.addEventListener("input", () => {
+        if (input === timerHours) {
+          input.value = clamp(input.value, 0, 99);
+        } else {
+          input.value = clamp(input.value, 0, 59);
+        }
+
+        syncTimerFromInputs();
+      });
+    });
+
+    document.querySelectorAll("[data-adjust]").forEach(button => {
+      button.addEventListener("click", () => {
+        adjustTimer(button.dataset.adjust);
+      });
+    });
+
+    timerStartPause.addEventListener("click", toggleTimer);
+    timerReset.addEventListener("click", resetTimer);
+    stopAlarmButton.addEventListener("click", stopAlarm);
+
+    // ------------------------------------------------------------
+    // Gemeinsames Pausieren und Fortsetzen
+    // ------------------------------------------------------------
+
+    const masterButtons = [...document.querySelectorAll(".master-toggle")];
+
+    let masterPaused = false;
+    let resumeStopwatchAfterMaster = false;
+    let resumeTimerAfterMaster = false;
+
+    function updateMasterControls() {
+      const label = masterPaused
+        ? "▶ Beide fortsetzen"
+        : "⏸ Beide pausieren";
+
+      masterButtons.forEach(button => {
+        button.textContent = label;
+      });
+
+      stopwatchStartPause.disabled = masterPaused;
+      timerStartPause.disabled = masterPaused;
+    }
+
+    function pauseBoth() {
+      resumeStopwatchAfterMaster = stopwatchRunning;
+      resumeTimerAfterMaster = timerRunning;
+
+      if (stopwatchRunning) {
+        pauseStopwatch();
+        stopwatchStatus.textContent = "Gemeinsam pausiert";
+      }
+
+      if (timerRunning) {
+        pauseTimer();
+        timerStatus.textContent = "Gemeinsam pausiert";
+      }
+
+      stopAlarm();
+      masterPaused = true;
+      updateMasterControls();
+    }
+
+    function resumeBoth() {
+      masterPaused = false;
+      updateMasterControls();
+
+      const shouldResumeStopwatch = resumeStopwatchAfterMaster;
+      const shouldResumeTimer = resumeTimerAfterMaster;
+
+      resumeStopwatchAfterMaster = false;
+      resumeTimerAfterMaster = false;
+
+      if (shouldResumeStopwatch) {
+        startStopwatch();
+      }
+
+      if (shouldResumeTimer && timerRemainingMs > 0) {
+        startTimer();
+      }
+    }
+
+    function toggleMasterPause() {
+      getAudioContext();
+
+      if (masterPaused) {
+        resumeBoth();
+      } else {
+        pauseBoth();
+      }
+    }
+
+    masterButtons.forEach(button => {
+      button.addEventListener("click", toggleMasterPause);
+    });
+
+    // ------------------------------------------------------------
+    // Initialisierung
+    // ------------------------------------------------------------
+
+    renderStopwatch();
+    renderTimer();
+    updateMasterControls();
+  </script>
+</body>
+</html>
