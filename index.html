@@ -1,34 +1,34 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notion Stoppuhr & Timer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notion Lern-Timer</title>
 
   <style>
     :root {
       color-scheme: light dark;
-      --bg: rgba(255, 255, 255, 0.94);
-      --section: rgba(55, 53, 47, 0.035);
+      --bg: rgba(255,255,255,.95);
+      --card: rgba(55,53,47,.035);
       --text: #2f2f2f;
       --muted: #787774;
-      --border: rgba(55, 53, 47, 0.16);
+      --border: rgba(55,53,47,.16);
       --button: #2f2f2f;
-      --button-text: #ffffff;
-      --secondary: rgba(55, 53, 47, 0.08);
+      --buttonText: #fff;
+      --soft: rgba(55,53,47,.08);
       --danger: #d44c47;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: rgba(32, 32, 32, 0.95);
-        --section: rgba(255, 255, 255, 0.035);
+        --bg: rgba(32,32,32,.96);
+        --card: rgba(255,255,255,.035);
         --text: #f2f2f2;
-        --muted: #a7a7a7;
-        --border: rgba(255, 255, 255, 0.14);
+        --muted: #aaa;
+        --border: rgba(255,255,255,.14);
         --button: #f2f2f2;
-        --button-text: #222222;
-        --secondary: rgba(255, 255, 255, 0.10);
+        --buttonText: #222;
+        --soft: rgba(255,255,255,.10);
       }
     }
 
@@ -42,27 +42,25 @@
       min-height: 100%;
       margin: 0;
       background: transparent;
-      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
     }
 
     body {
       display: grid;
       place-items: center;
-      padding: 8px;
+      padding: 7px;
       color: var(--text);
     }
 
     .widget {
       width: min(100%, 500px);
-      padding: 11px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: var(--bg);
-      backdrop-filter: blur(12px);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--bg);
     }
 
     .master-row {
@@ -70,109 +68,144 @@
       justify-content: flex-start;
     }
 
-    .section {
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: var(--section);
+    .card {
       display: flex;
       flex-direction: column;
-      gap: 5px;
-    }
-
-    .title-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       gap: 8px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 15px;
-      font-weight: 650;
-      letter-spacing: -0.01em;
-    }
-
-    .status {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .display {
-      font-variant-numeric: tabular-nums;
-      text-align: center;
-      font-size: clamp(34px, 9vw, 56px);
-      font-weight: 700;
-      letter-spacing: -0.045em;
-      line-height: 1;
-      padding: 4px 0;
-    }
-
-    .milliseconds {
-      color: var(--muted);
-      font-size: 0.52em;
-      margin-left: 4px;
-    }
-
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px;
-    }
-
-    button {
-      border: 0;
+      padding: 13px;
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 9px 12px;
-      font: inherit;
-      font-weight: 650;
-      cursor: pointer;
-      transition:
-        transform 120ms ease,
-        opacity 120ms ease,
-        background 120ms ease;
+      background: var(--card);
     }
 
-    button:active {
-      transform: scale(0.98);
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.45;
-    }
-
-    .primary {
-      background: var(--button);
-      color: var(--button-text);
-    }
-
-    .secondary {
-      background: var(--secondary);
-      color: var(--text);
-    }
-
-    .master-button {
-      padding: 7px 10px;
-      font-size: 11px;
-      background: var(--secondary);
-      color: var(--text);
-    }
-
-    .sound-row {
+    .head,
+    .setting-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      font-size: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .status,
+    .note {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .note {
+      margin: -2px 0 0;
+      text-align: center;
+    }
+
+    .display {
+      padding: 2px 0;
+      text-align: center;
+      font-size: clamp(34px, 9vw, 55px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.045em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fraction {
+      margin-left: 3px;
+      color: var(--muted);
+      font-size: .52em;
+    }
+
+    .controls,
+    .inputs,
+    .adjust-row {
+      display: grid;
+      gap: 5px;
+    }
+
+    .controls {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .inputs {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .adjust-row {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(.98);
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      color: var(--buttonText);
+      background: var(--button);
+    }
+
+    .secondary,
+    .master,
+    .adjust-row button {
+      color: var(--text);
+      background: var(--soft);
+    }
+
+    .master {
+      padding: 7px 10px;
+      font-size: 11px;
+    }
+
+    .adjust-row button {
+      padding: 7px 3px;
+      font-size: 11px;
+    }
+
+    .negative button {
       color: var(--muted);
     }
 
-    .sound-controls {
-      display: flex;
-      align-items: center;
-      gap: 9px;
+    input[type="number"] {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      color: var(--text);
+      background: transparent;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
     }
 
     input[type="range"] {
@@ -180,229 +213,180 @@
       accent-color: var(--text);
     }
 
+    input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--text);
+    }
+
     .toggle {
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      font-size: 12px;
       cursor: pointer;
     }
 
-    .toggle input {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--text);
-    }
-
-    .inputs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .field label {
-      font-size: 11px;
+    .volume {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       color: var(--muted);
-    }
-
-    input[type="number"] {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 7px;
-      background: transparent;
-      color: var(--text);
-      font: inherit;
-      font-variant-numeric: tabular-nums;
-      text-align: center;
-      outline: none;
-    }
-
-    input[type="number"]:focus {
-      border-color: var(--text);
-    }
-
-    .adjustments {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .adjustment-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
-    }
-
-    .adjustment-row button {
-      padding: 7px 4px;
       font-size: 11px;
-      background: var(--secondary);
-      color: var(--text);
     }
 
-    .adjustment-row.negative button {
-      color: var(--muted);
-    }
-
-    .alarm-button {
+    .alarm-stop {
       display: none;
       grid-column: 1 / -1;
+      color: #fff;
       background: var(--danger);
-      color: #ffffff;
     }
 
     .finished .timer-display {
       color: var(--danger);
     }
 
-    .hint {
-      margin: -3px 0 0;
-      text-align: center;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
     @media (max-width: 420px) {
-      .widget {
-        padding: 7px;
+      .card {
+        padding: 11px;
       }
 
-      .section {
-        padding: 12px;
-      }
-
-      .sound-row {
+      .setting-row {
         align-items: flex-start;
         flex-direction: column;
+        gap: 5px;
       }
     }
   </style>
 </head>
 
 <body>
-  <main class="widget" id="widget">
+  <main class="widget">
+
     <div class="master-row">
-      <button class="master-button master-toggle" type="button">
+      <button class="master master-toggle" type="button">
         ▶ Beide starten
       </button>
     </div>
 
-    <section class="section">
-      <div class="title-row">
-        <h1>Stoppuhr</h1>
-        <span class="status" id="stopwatchStatus">Bereit</span>
+    <section class="card">
+
+      <div class="head">
+        <h2>Stoppuhr</h2>
+        <span class="status" id="swStatus">Bereit</span>
       </div>
 
-      <div class="display" aria-live="polite">
-        <span id="stopwatchMainTime">00:00:00</span>
-        <span class="milliseconds" id="stopwatchMilliseconds">.00</span>
+      <div class="display">
+        <span id="swMain">00:00:00</span>
+        <span class="fraction" id="swFraction">.00</span>
       </div>
 
       <div class="controls">
-        <button class="primary" id="stopwatchStartPause" type="button">
+        <button class="primary" id="swToggle" type="button">
           Start
         </button>
 
-        <button class="secondary" id="stopwatchReset" type="button">
+        <button class="secondary" id="swReset" type="button">
           Zurücksetzen
         </button>
       </div>
 
-      <div class="sound-row">
+      <div class="setting-row">
+
         <label class="toggle">
-          <input type="checkbox" id="alphaEnabled" checked />
+          <input id="alphaEnabled" type="checkbox" checked>
           Alpha-Waves
         </label>
 
-        <div class="sound-controls">
-          <span>Leise</span>
+        <span class="volume">
+          Leise
 
           <input
-            type="range"
             id="alphaVolume"
+            type="range"
             min="0"
             max="0.06"
             step="0.002"
             value="0.016"
-            aria-label="Alpha-Waves-Lautstärke"
-          />
-        </div>
+          >
+        </span>
+
       </div>
 
-      <p class="hint">
+      <p class="note">
         Für den Binaural-Effekt Kopfhörer verwenden.
       </p>
+
     </section>
 
-    <section class="section" id="timerSection">
-      <div class="title-row">
-        <h1>Timer</h1>
+    <section class="card" id="timerCard">
+
+      <div class="head">
+        <h2>Timer</h2>
         <span class="status" id="timerStatus">Bereit</span>
       </div>
 
       <div class="inputs">
+
         <div class="field">
-          <label for="timerHours">Stunden</label>
+          <label for="hours">Stunden</label>
+
           <input
-            id="timerHours"
+            id="hours"
             type="number"
             min="0"
             max="99"
             value="0"
-          />
+          >
         </div>
 
         <div class="field">
-          <label for="timerMinutes">Minuten</label>
+          <label for="minutes">Minuten</label>
+
           <input
-            id="timerMinutes"
+            id="minutes"
             type="number"
             min="0"
             max="59"
             value="25"
-          />
+          >
         </div>
 
         <div class="field">
-          <label for="timerSeconds">Sekunden</label>
+          <label for="seconds">Sekunden</label>
+
           <input
-            id="timerSeconds"
+            id="seconds"
             type="number"
             min="0"
             max="59"
             value="0"
-          />
+          >
         </div>
+
       </div>
 
       <div class="display timer-display" id="timerDisplay">
         00:25:00
       </div>
 
-      <div class="adjustments" aria-label="Timerzeit anpassen">
-        <div class="adjustment-row">
-          <button type="button" data-adjust="1">+1 min</button>
-          <button type="button" data-adjust="5">+5 min</button>
-          <button type="button" data-adjust="10">+10 min</button>
-          <button type="button" data-adjust="30">+30 min</button>
-        </div>
+      <div class="adjust-row">
+        <button data-minutes="1" type="button">+1 min</button>
+        <button data-minutes="5" type="button">+5 min</button>
+        <button data-minutes="10" type="button">+10 min</button>
+        <button data-minutes="30" type="button">+30 min</button>
+      </div>
 
-        <div class="adjustment-row negative">
-          <button type="button" data-adjust="-1">−1 min</button>
-          <button type="button" data-adjust="-5">−5 min</button>
-          <button type="button" data-adjust="-10">−10 min</button>
-          <button type="button" data-adjust="-30">−30 min</button>
-        </div>
+      <div class="adjust-row negative">
+        <button data-minutes="-1" type="button">−1 min</button>
+        <button data-minutes="-5" type="button">−5 min</button>
+        <button data-minutes="-10" type="button">−10 min</button>
+        <button data-minutes="-30" type="button">−30 min</button>
       </div>
 
       <div class="controls">
-        <button class="primary" id="timerStartPause" type="button">
+
+        <button class="primary" id="timerToggle" type="button">
           Start
         </button>
 
@@ -410,46 +394,74 @@
           Zurücksetzen
         </button>
 
-        <button class="alarm-button" id="stopAlarm" type="button">
+        <button class="alarm-stop" id="alarmStop" type="button">
           Alarm stoppen
         </button>
+
       </div>
 
-      <div class="sound-row">
+      <div class="setting-row">
+
         <label class="toggle">
-          <input type="checkbox" id="alarmEnabled" checked />
+          <input id="alarmEnabled" type="checkbox" checked>
           Alarmton
         </label>
 
-        <div class="sound-controls">
-          <span>Lautstärke</span>
+        <span class="volume">
+          Lautstärke
 
           <input
-            type="range"
             id="alarmVolume"
+            type="range"
             min="0"
             max="0.35"
             step="0.01"
             value="0.14"
-            aria-label="Alarm-Lautstärke"
-          />
-        </div>
+          >
+        </span>
+
       </div>
+
+      <div class="setting-row">
+
+        <label class="toggle">
+          <input id="notifyEnabled" type="checkbox">
+          Desktop-Benachrichtigung
+        </label>
+
+        <span class="status" id="notifyStatus">
+          Aus
+        </span>
+
+      </div>
+
     </section>
 
     <div class="master-row">
-      <button class="master-button master-toggle" type="button">
+      <button class="master master-toggle" type="button">
         ▶ Beide starten
       </button>
     </div>
+
   </main>
 
   <script>
     "use strict";
 
-    let audioContext = null;
+    const $ = id => document.getElementById(id);
 
-    function getAudioContext() {
+    const clamp = (value, min, max) =>
+      Math.min(
+        Math.max(Number(value) || 0, min),
+        max
+      );
+
+    const roundMinutes = milliseconds =>
+      Math.round(milliseconds / 60000);
+
+    let audioContext;
+
+    function audio() {
       if (!audioContext) {
         audioContext = new (
           window.AudioContext ||
@@ -464,98 +476,134 @@
       return audioContext;
     }
 
-    const stopwatchMainTime =
-      document.getElementById("stopwatchMainTime");
+    /*
+      STOPPUHR
+    */
 
-    const stopwatchMilliseconds =
-      document.getElementById("stopwatchMilliseconds");
+    let swRunning = false;
+    let swStartedAt = 0;
+    let swElapsed = 0;
+    let swFrame;
+    let alphaNodes;
 
-    const stopwatchStartPause =
-      document.getElementById("stopwatchStartPause");
+    function formatStopwatch(ms) {
+      const csTotal = Math.floor(ms / 10);
+      const cs = csTotal % 100;
 
-    const stopwatchReset =
-      document.getElementById("stopwatchReset");
+      const secTotal = Math.floor(csTotal / 100);
+      const sec = secTotal % 60;
 
-    const stopwatchStatus =
-      document.getElementById("stopwatchStatus");
+      const minTotal = Math.floor(secTotal / 60);
+      const min = minTotal % 60;
 
-    const alphaEnabled =
-      document.getElementById("alphaEnabled");
+      const hrs = Math.floor(minTotal / 60);
 
-    const alphaVolume =
-      document.getElementById("alphaVolume");
+      return {
+        main: [hrs, min, sec]
+          .map(number =>
+            String(number).padStart(2, "0")
+          )
+          .join(":"),
 
-    let stopwatchRunning = false;
-    let stopwatchStartTimestamp = 0;
-    let stopwatchElapsedBeforeStart = 0;
-    let stopwatchAnimationId = null;
-    let alphaNodes = null;
+        fraction:
+          String(cs).padStart(2, "0")
+      };
+    }
 
-    function startAlphaSound() {
+    function renderStopwatch() {
+      const elapsed = swRunning
+        ? swElapsed +
+          performance.now() -
+          swStartedAt
+        : swElapsed;
+
+      const formatted =
+        formatStopwatch(elapsed);
+
+      $("swMain").textContent =
+        formatted.main;
+
+      $("swFraction").textContent =
+        "." + formatted.fraction;
+
+      if (swRunning) {
+        swFrame =
+          requestAnimationFrame(
+            renderStopwatch
+          );
+      }
+    }
+
+    function startAlpha() {
       if (
         alphaNodes ||
-        !stopwatchRunning ||
-        !alphaEnabled.checked ||
-        Number(alphaVolume.value) <= 0
+        !swRunning ||
+        !$("alphaEnabled").checked ||
+        Number($("alphaVolume").value) <= 0
       ) {
         return;
       }
 
-      const ctx = getAudioContext();
-      const masterGain = ctx.createGain();
+      const ctx = audio();
 
-      const leftOscillator = ctx.createOscillator();
-      const rightOscillator = ctx.createOscillator();
+      const master =
+        ctx.createGain();
 
-      const leftPanner = ctx.createStereoPanner();
-      const rightPanner = ctx.createStereoPanner();
+      const left =
+        ctx.createOscillator();
 
-      const leftGain = ctx.createGain();
-      const rightGain = ctx.createGain();
+      const right =
+        ctx.createOscillator();
 
-      leftOscillator.type = "sine";
-      rightOscillator.type = "sine";
+      const leftPan =
+        ctx.createStereoPanner();
 
-      leftOscillator.frequency.value = 200;
-      rightOscillator.frequency.value = 210;
+      const rightPan =
+        ctx.createStereoPanner();
 
-      leftPanner.pan.value = -1;
-      rightPanner.pan.value = 1;
+      left.type = "sine";
+      right.type = "sine";
 
-      leftGain.gain.value = 0.5;
-      rightGain.gain.value = 0.5;
+      left.frequency.value = 200;
+      right.frequency.value = 210;
 
-      masterGain.gain.setValueAtTime(
+      leftPan.pan.value = -1;
+      rightPan.pan.value = 1;
+
+      master.gain.setValueAtTime(
         0.0001,
         ctx.currentTime
       );
 
-      masterGain.gain.exponentialRampToValueAtTime(
-        Math.max(0.0001, Number(alphaVolume.value)),
-        ctx.currentTime + 0.4
+      master.gain.exponentialRampToValueAtTime(
+        Math.max(
+          0.0001,
+          Number($("alphaVolume").value)
+        ),
+        ctx.currentTime + 0.35
       );
 
-      leftOscillator.connect(leftGain);
-      leftGain.connect(leftPanner);
-      leftPanner.connect(masterGain);
+      left
+        .connect(leftPan)
+        .connect(master);
 
-      rightOscillator.connect(rightGain);
-      rightGain.connect(rightPanner);
-      rightPanner.connect(masterGain);
+      right
+        .connect(rightPan)
+        .connect(master);
 
-      masterGain.connect(ctx.destination);
+      master.connect(ctx.destination);
 
-      leftOscillator.start();
-      rightOscillator.start();
+      left.start();
+      right.start();
 
       alphaNodes = {
-        leftOscillator,
-        rightOscillator,
-        masterGain
+        left,
+        right,
+        master
       };
     }
 
-    function stopAlphaSound() {
+    function stopAlpha() {
       if (!alphaNodes || !audioContext) {
         return;
       }
@@ -563,368 +611,203 @@
       const nodes = alphaNodes;
       alphaNodes = null;
 
-      const now = audioContext.currentTime;
+      const now =
+        audioContext.currentTime;
 
       try {
-        nodes.masterGain.gain.cancelScheduledValues(now);
+        nodes.master.gain.cancelScheduledValues(
+          now
+        );
 
-        nodes.masterGain.gain.setValueAtTime(
+        nodes.master.gain.setValueAtTime(
           Math.max(
             0.0001,
-            nodes.masterGain.gain.value
+            nodes.master.gain.value
           ),
           now
         );
 
-        nodes.masterGain.gain.exponentialRampToValueAtTime(
+        nodes.master.gain.exponentialRampToValueAtTime(
           0.0001,
           now + 0.12
         );
 
-        nodes.leftOscillator.stop(now + 0.14);
-        nodes.rightOscillator.stop(now + 0.14);
-      } catch (error) {
-        console.warn(
-          "Alpha-Sound konnte nicht sauber beendet werden:",
-          error
-        );
-      }
-    }
-
-    function updateAlphaVolume() {
-      if (!alphaNodes || !audioContext) {
-        return;
-      }
-
-      const now = audioContext.currentTime;
-
-      alphaNodes.masterGain.gain.cancelScheduledValues(now);
-
-      alphaNodes.masterGain.gain.setTargetAtTime(
-        Math.max(
-          0.0001,
-          Number(alphaVolume.value)
-        ),
-        now,
-        0.05
-      );
-
-      if (Number(alphaVolume.value) <= 0) {
-        stopAlphaSound();
-      }
-    }
-
-    function formatStopwatch(millisecondsTotal) {
-      const totalCentiseconds =
-        Math.floor(millisecondsTotal / 10);
-
-      const centiseconds =
-        totalCentiseconds % 100;
-
-      const totalSeconds =
-        Math.floor(totalCentiseconds / 100);
-
-      const seconds =
-        totalSeconds % 60;
-
-      const totalMinutes =
-        Math.floor(totalSeconds / 60);
-
-      const minutes =
-        totalMinutes % 60;
-
-      const hours =
-        Math.floor(totalMinutes / 60);
-
-      return {
-        main: [hours, minutes, seconds]
-          .map(value =>
-            String(value).padStart(2, "0")
-          )
-          .join(":"),
-
-        fraction:
-          String(centiseconds).padStart(2, "0")
-      };
-    }
-
-    function renderStopwatch() {
-      const elapsed = stopwatchRunning
-        ? stopwatchElapsedBeforeStart +
-          performance.now() -
-          stopwatchStartTimestamp
-        : stopwatchElapsedBeforeStart;
-
-      const formatted =
-        formatStopwatch(elapsed);
-
-      stopwatchMainTime.textContent =
-        formatted.main;
-
-      stopwatchMilliseconds.textContent =
-        "." + formatted.fraction;
-
-      if (stopwatchRunning) {
-        stopwatchAnimationId =
-          requestAnimationFrame(renderStopwatch);
+        nodes.left.stop(now + 0.14);
+        nodes.right.stop(now + 0.14);
+      } catch (_) {
       }
     }
 
     function startStopwatch() {
-      getAudioContext();
+      if (swRunning) {
+        return;
+      }
 
-      stopwatchStartTimestamp =
+      audio();
+
+      swStartedAt =
         performance.now();
 
-      stopwatchRunning = true;
+      swRunning = true;
 
-      stopwatchStartPause.textContent =
+      $("swToggle").textContent =
         "Pause";
 
-      stopwatchStatus.textContent =
+      $("swStatus").textContent =
         "Läuft";
 
-      startAlphaSound();
+      startAlpha();
       renderStopwatch();
     }
 
-    function pauseStopwatch() {
-      if (!stopwatchRunning) {
+    function pauseStopwatch(
+      label = "Pausiert"
+    ) {
+      if (!swRunning) {
         return;
       }
 
-      stopwatchElapsedBeforeStart +=
+      swElapsed +=
         performance.now() -
-        stopwatchStartTimestamp;
+        swStartedAt;
 
-      stopwatchRunning = false;
+      swRunning = false;
 
-      cancelAnimationFrame(
-        stopwatchAnimationId
-      );
+      cancelAnimationFrame(swFrame);
 
-      stopAlphaSound();
+      stopAlpha();
 
-      stopwatchStartPause.textContent =
+      $("swToggle").textContent =
         "Weiter";
 
-      stopwatchStatus.textContent =
-        "Pausiert";
+      $("swStatus").textContent =
+        label;
 
       renderStopwatch();
-    }
-
-    function toggleStopwatch() {
-      if (masterPaused) {
-        return;
-      }
-
-      if (stopwatchRunning) {
-        pauseStopwatch();
-      } else {
-        startStopwatch();
-      }
     }
 
     function resetStopwatch() {
-      stopwatchRunning = false;
-      stopwatchElapsedBeforeStart = 0;
-      stopwatchStartTimestamp = 0;
+      swRunning = false;
+      swElapsed = 0;
 
-      cancelAnimationFrame(
-        stopwatchAnimationId
-      );
+      cancelAnimationFrame(swFrame);
 
-      stopAlphaSound();
+      stopAlpha();
 
-      stopwatchStartPause.textContent =
+      $("swToggle").textContent =
         "Start";
 
-      stopwatchStatus.textContent =
+      $("swStatus").textContent =
         "Bereit";
 
-      resumeStopwatchAfterMaster = false;
+      resumeSw = false;
 
       renderStopwatch();
     }
 
-    stopwatchStartPause.addEventListener(
-      "click",
-      () => {
-        toggleStopwatch();
-        updateMasterControls();
-      }
-    );
-
-    stopwatchReset.addEventListener(
-      "click",
-      () => {
-        resetStopwatch();
-        updateMasterControls();
-      }
-    );
-
-    alphaEnabled.addEventListener(
-      "change",
-      () => {
-        if (
-          stopwatchRunning &&
-          alphaEnabled.checked
-        ) {
-          getAudioContext();
-          startAlphaSound();
-        } else {
-          stopAlphaSound();
-        }
-      }
-    );
-
-    alphaVolume.addEventListener(
-      "input",
-      () => {
-        if (
-          stopwatchRunning &&
-          alphaEnabled.checked &&
-          Number(alphaVolume.value) > 0 &&
-          !alphaNodes
-        ) {
-          startAlphaSound();
-        } else {
-          updateAlphaVolume();
-        }
-      }
-    );
-
-    const timerSection =
-      document.getElementById("timerSection");
-
-    const timerHours =
-      document.getElementById("timerHours");
-
-    const timerMinutes =
-      document.getElementById("timerMinutes");
-
-    const timerSeconds =
-      document.getElementById("timerSeconds");
-
-    const timerDisplay =
-      document.getElementById("timerDisplay");
-
-    const timerStartPause =
-      document.getElementById("timerStartPause");
-
-    const timerReset =
-      document.getElementById("timerReset");
-
-    const timerStatus =
-      document.getElementById("timerStatus");
-
-    const stopAlarmButton =
-      document.getElementById("stopAlarm");
-
-    const alarmEnabled =
-      document.getElementById("alarmEnabled");
-
-    const alarmVolume =
-      document.getElementById("alarmVolume");
+    /*
+      TIMER
+    */
 
     let timerRunning = false;
-    let timerRemainingMs = getInputDuration();
-    let timerEndTimestamp = null;
-    let timerIntervalId = null;
-    let alarmIntervalId = null;
+    let timerEnd = 0;
+    let timerInterval;
+    let alarmInterval;
+    let segmentStartedAt = null;
 
-    function clamp(value, minimum, maximum) {
-      return Math.min(
-        Math.max(Number(value) || 0, minimum),
-        maximum
-      );
-    }
+    let configuredMs =
+      inputDuration();
 
-    function getInputDuration() {
-      const hours = clamp(
-        timerHours.value,
-        0,
-        99
-      );
+    let remainingMs =
+      configuredMs;
 
-      const minutes = clamp(
-        timerMinutes.value,
-        0,
-        59
-      );
-
-      const seconds = clamp(
-        timerSeconds.value,
-        0,
-        59
-      );
-
+    function inputDuration() {
       return (
-        hours * 3600 +
-        minutes * 60 +
-        seconds
+        clamp(
+          $("hours").value,
+          0,
+          99
+        ) * 3600 +
+
+        clamp(
+          $("minutes").value,
+          0,
+          59
+        ) * 60 +
+
+        clamp(
+          $("seconds").value,
+          0,
+          59
+        )
       ) * 1000;
     }
 
-    function formatTimer(milliseconds) {
-      const totalSeconds = Math.max(
-        0,
-        Math.ceil(milliseconds / 1000)
-      );
+    function writeInputs(ms) {
+      const totalSeconds =
+        Math.floor(
+          Math.max(0, ms) / 1000
+        );
+
+      $("hours").value =
+        Math.floor(
+          totalSeconds / 3600
+        );
+
+      $("minutes").value =
+        Math.floor(
+          totalSeconds / 60
+        ) % 60;
+
+      $("seconds").value =
+        totalSeconds % 60;
+    }
+
+    function formatTimer(ms) {
+      const totalSeconds =
+        Math.max(
+          0,
+          Math.ceil(ms / 1000)
+        );
+
+      const hours =
+        Math.floor(
+          totalSeconds / 3600
+        );
+
+      const minutes =
+        Math.floor(
+          totalSeconds / 60
+        ) % 60;
 
       const seconds =
         totalSeconds % 60;
 
-      const totalMinutes =
-        Math.floor(totalSeconds / 60);
-
-      const minutes =
-        totalMinutes % 60;
-
-      const hours =
-        Math.floor(totalMinutes / 60);
-
-      return [hours, minutes, seconds]
-        .map(value =>
-          String(value).padStart(2, "0")
+      return [
+        hours,
+        minutes,
+        seconds
+      ]
+        .map(number =>
+          String(number).padStart(2, "0")
         )
         .join(":");
     }
 
     function renderTimer() {
-      timerDisplay.textContent =
-        formatTimer(timerRemainingMs);
+      $("timerDisplay").textContent =
+        formatTimer(remainingMs);
     }
 
-    function syncTimerFromInputs() {
-      if (timerRunning) {
-        return;
-      }
-
-      stopAlarm();
-
-      timerRemainingMs =
-        getInputDuration();
-
-      timerStatus.textContent =
-        timerRemainingMs > 0
-          ? "Bereit"
-          : "Zeit einstellen";
-
-      renderTimer();
-      updateMasterControls();
-    }
-
-    function playAlarmPulse() {
+    function playAlarm() {
       if (
-        !alarmEnabled.checked ||
-        Number(alarmVolume.value) <= 0
+        !$("alarmEnabled").checked ||
+        Number($("alarmVolume").value) <= 0
       ) {
         return;
       }
 
-      const ctx = getAudioContext();
+      const ctx = audio();
       const now = ctx.currentTime;
 
       [0, 0.18, 0.36].forEach(
@@ -940,13 +823,15 @@
               ? "square"
               : "sine";
 
-          oscillator.frequency.setValueAtTime(
-            index === 1 ? 880 : 660,
-            now + delay
-          );
+          oscillator.frequency.value =
+            index === 1
+              ? 880
+              : 660;
 
           gain.gain.setValueAtTime(
-            Number(alarmVolume.value),
+            Number(
+              $("alarmVolume").value
+            ),
             now + delay
           );
 
@@ -955,10 +840,14 @@
             now + delay + 0.13
           );
 
-          oscillator.connect(gain);
-          gain.connect(ctx.destination);
+          oscillator
+            .connect(gain)
+            .connect(ctx.destination);
 
-          oscillator.start(now + delay);
+          oscillator.start(
+            now + delay
+          );
+
           oscillator.stop(
             now + delay + 0.14
           );
@@ -969,197 +858,373 @@
     function startAlarm() {
       stopAlarm();
 
-      timerSection.classList.add(
+      $("timerCard").classList.add(
         "finished"
       );
 
-      stopAlarmButton.style.display =
+      $("alarmStop").style.display =
         "block";
 
-      playAlarmPulse();
+      playAlarm();
 
-      alarmIntervalId = setInterval(
-        playAlarmPulse,
-        1100
-      );
+      alarmInterval =
+        setInterval(
+          playAlarm,
+          1100
+        );
     }
 
     function stopAlarm() {
-      if (alarmIntervalId) {
-        clearInterval(alarmIntervalId);
-        alarmIntervalId = null;
-      }
+      clearInterval(alarmInterval);
 
-      stopAlarmButton.style.display =
-        "none";
+      alarmInterval = null;
 
-      timerSection.classList.remove(
+      $("timerCard").classList.remove(
         "finished"
       );
+
+      $("alarmStop").style.display =
+        "none";
     }
 
-    function timerTick() {
-      timerRemainingMs = Math.max(
-        0,
-        timerEndTimestamp - Date.now()
-      );
+    /*
+      DESKTOP-BENACHRICHTIGUNG
+    */
 
-      renderTimer();
+    function updateNotifyStatus() {
+      if (!("Notification" in window)) {
+        $("notifyStatus").textContent =
+          "Nicht unterstützt";
 
-      if (timerRemainingMs <= 0) {
-        finishTimer();
+        $("notifyEnabled").checked =
+          false;
+      }
+
+      else if (
+        Notification.permission ===
+          "granted" &&
+        $("notifyEnabled").checked
+      ) {
+        $("notifyStatus").textContent =
+          "An";
+      }
+
+      else if (
+        Notification.permission ===
+        "denied"
+      ) {
+        $("notifyStatus").textContent =
+          "Blockiert";
+
+        $("notifyEnabled").checked =
+          false;
+      }
+
+      else {
+        $("notifyStatus").textContent =
+          "Aus";
+      }
+    }
+
+    async function changeNotificationSetting() {
+      if (
+        !$("notifyEnabled").checked
+      ) {
+        localStorage.setItem(
+          "timerNotify",
+          "false"
+        );
+
+        updateNotifyStatus();
+        return;
+      }
+
+      if (!("Notification" in window)) {
+        updateNotifyStatus();
+        return;
+      }
+
+      try {
+        const permission =
+          Notification.permission ===
+          "default"
+            ? await Notification
+                .requestPermission()
+            : Notification.permission;
+
+        const enabled =
+          permission === "granted";
+
+        $("notifyEnabled").checked =
+          enabled;
+
+        localStorage.setItem(
+          "timerNotify",
+          String(enabled)
+        );
+      }
+
+      catch (_) {
+        $("notifyEnabled").checked =
+          false;
+
+        localStorage.setItem(
+          "timerNotify",
+          "false"
+        );
+
+        $("notifyStatus").textContent =
+          "In Notion blockiert";
+
+        return;
+      }
+
+      updateNotifyStatus();
+    }
+
+    function sendNotification(
+      segmentMs
+    ) {
+      if (
+        !$("notifyEnabled").checked ||
+        !("Notification" in window) ||
+        Notification.permission !==
+          "granted"
+      ) {
+        return;
+      }
+
+      const configuredMinutes =
+        roundMinutes(configuredMs);
+
+      const segmentMinutes =
+        roundMinutes(segmentMs);
+
+      try {
+        new Notification(
+          `${configuredMinutes}/${segmentMinutes} Minuten Timer abgelaufen`,
+          {
+            body:
+              "Dein Lern-Timer ist beendet.",
+
+            tag:
+              "notion-study-timer",
+
+            renotify:
+              true
+          }
+        );
+      }
+
+      catch (_) {
       }
     }
 
     function startTimer() {
-      getAudioContext();
-      stopAlarm();
-
-      if (timerRemainingMs <= 0) {
-        timerRemainingMs =
-          getInputDuration();
-      }
-
-      if (timerRemainingMs <= 0) {
-        timerStatus.textContent =
-          "Zeit einstellen";
-
-        updateMasterControls();
+      if (timerRunning) {
         return;
       }
 
-      timerEndTimestamp =
-        Date.now() + timerRemainingMs;
+      stopAlarm();
+      audio();
+
+      if (remainingMs <= 0) {
+        remainingMs =
+          configuredMs;
+      }
+
+      if (remainingMs <= 0) {
+        $("timerStatus").textContent =
+          "Zeit einstellen";
+
+        return;
+      }
+
+      segmentStartedAt =
+        Date.now();
+
+      timerEnd =
+        segmentStartedAt +
+        remainingMs;
 
       timerRunning = true;
 
-      timerStartPause.textContent =
+      $("timerToggle").textContent =
         "Pause";
 
-      timerStatus.textContent =
+      $("timerStatus").textContent =
         "Läuft";
 
-      timerIntervalId = setInterval(
-        timerTick,
-        100
-      );
+      timerInterval =
+        setInterval(
+          tickTimer,
+          100
+        );
 
-      timerTick();
+      tickTimer();
     }
 
-    function pauseTimer() {
+    function pauseTimer(
+      label = "Pausiert"
+    ) {
       if (!timerRunning) {
         return;
       }
 
-      timerRemainingMs = Math.max(
-        0,
-        timerEndTimestamp - Date.now()
-      );
+      remainingMs =
+        Math.max(
+          0,
+          timerEnd - Date.now()
+        );
 
       timerRunning = false;
+      segmentStartedAt = null;
 
-      clearInterval(timerIntervalId);
-      timerIntervalId = null;
+      clearInterval(timerInterval);
 
-      timerStartPause.textContent =
+      timerInterval = null;
+
+      $("timerToggle").textContent =
         "Weiter";
 
-      timerStatus.textContent =
-        "Pausiert";
+      $("timerStatus").textContent =
+        label;
 
       renderTimer();
     }
 
-    function toggleTimer() {
-      if (masterPaused) {
-        return;
-      }
+    function tickTimer() {
+      remainingMs =
+        Math.max(
+          0,
+          timerEnd - Date.now()
+        );
 
-      if (timerRunning) {
-        pauseTimer();
-      } else {
-        startTimer();
+      renderTimer();
+
+      if (remainingMs <= 0) {
+        finishTimer();
       }
     }
 
     function finishTimer() {
+      const segmentMs =
+        segmentStartedAt
+          ? Math.max(
+              0,
+              Date.now() -
+              segmentStartedAt
+            )
+          : 0;
+
       timerRunning = false;
+      segmentStartedAt = null;
+      remainingMs = 0;
 
-      clearInterval(timerIntervalId);
-      timerIntervalId = null;
+      clearInterval(timerInterval);
 
-      timerRemainingMs = 0;
-      resumeTimerAfterMaster = false;
+      timerInterval = null;
+      resumeTimer = false;
 
-      renderTimer();
-
-      timerStartPause.textContent =
+      $("timerToggle").textContent =
         "Start";
 
-      timerStatus.textContent =
+      $("timerStatus").textContent =
         "Fertig";
 
+      renderTimer();
       startAlarm();
-      updateMasterControls();
+
+      sendNotification(segmentMs);
+
+      updateMaster();
     }
 
     function resetTimer() {
       timerRunning = false;
+      segmentStartedAt = null;
 
-      clearInterval(timerIntervalId);
-      timerIntervalId = null;
+      clearInterval(timerInterval);
+
+      timerInterval = null;
 
       stopAlarm();
 
-      timerRemainingMs =
-        getInputDuration();
+      remainingMs =
+        configuredMs;
 
-      resumeTimerAfterMaster = false;
+      resumeTimer = false;
 
-      timerStartPause.textContent =
+      $("timerToggle").textContent =
         "Start";
 
-      timerStatus.textContent =
-        timerRemainingMs > 0
+      $("timerStatus").textContent =
+        remainingMs > 0
           ? "Bereit"
           : "Zeit einstellen";
 
       renderTimer();
     }
 
+    function syncInputs() {
+      if (timerRunning) {
+        return;
+      }
+
+      stopAlarm();
+
+      configuredMs =
+        inputDuration();
+
+      remainingMs =
+        configuredMs;
+
+      $("timerStatus").textContent =
+        remainingMs > 0
+          ? "Bereit"
+          : "Zeit einstellen";
+
+      renderTimer();
+      updateMaster();
+    }
+
     function adjustTimer(minutes) {
       stopAlarm();
 
       const delta =
-        Number(minutes) * 60 * 1000;
+        Number(minutes) * 60000;
 
-      if (timerRunning) {
-        timerRemainingMs = Math.max(
+      configuredMs =
+        Math.max(
           0,
-          timerEndTimestamp -
-          Date.now() +
-          delta
+          configuredMs + delta
         );
 
-        if (timerRemainingMs <= 0) {
+      remainingMs =
+        Math.max(
+          0,
+          remainingMs + delta
+        );
+
+      writeInputs(configuredMs);
+
+      if (timerRunning) {
+        if (remainingMs <= 0) {
           finishTimer();
           return;
         }
 
-        timerEndTimestamp =
-          Date.now() + timerRemainingMs;
+        timerEnd =
+          Date.now() +
+          remainingMs;
 
-        timerStatus.textContent =
+        $("timerStatus").textContent =
           "Läuft";
-      } else {
-        timerRemainingMs = Math.max(
-          0,
-          timerRemainingMs + delta
-        );
+      }
 
-        timerStatus.textContent =
-          timerRemainingMs > 0
+      else {
+        $("timerStatus").textContent =
+          remainingMs > 0
             ? (
                 masterPaused
                   ? "Gemeinsam pausiert"
@@ -1169,69 +1234,12 @@
       }
 
       renderTimer();
-      updateMasterControls();
+      updateMaster();
     }
 
-    [
-      timerHours,
-      timerMinutes,
-      timerSeconds
-    ].forEach(input => {
-      input.addEventListener(
-        "input",
-        () => {
-          if (input === timerHours) {
-            input.value = clamp(
-              input.value,
-              0,
-              99
-            );
-          } else {
-            input.value = clamp(
-              input.value,
-              0,
-              59
-            );
-          }
-
-          syncTimerFromInputs();
-        }
-      );
-    });
-
-    document
-      .querySelectorAll("[data-adjust]")
-      .forEach(button => {
-        button.addEventListener(
-          "click",
-          () => {
-            adjustTimer(
-              button.dataset.adjust
-            );
-          }
-        );
-      });
-
-    timerStartPause.addEventListener(
-      "click",
-      () => {
-        toggleTimer();
-        updateMasterControls();
-      }
-    );
-
-    timerReset.addEventListener(
-      "click",
-      () => {
-        resetTimer();
-        updateMasterControls();
-      }
-    );
-
-    stopAlarmButton.addEventListener(
-      "click",
-      stopAlarm
-    );
+    /*
+      GEMEINSAME STEUERUNG
+    */
 
     const masterButtons = [
       ...document.querySelectorAll(
@@ -1240,145 +1248,281 @@
     ];
 
     let masterPaused = false;
-    let resumeStopwatchAfterMaster = false;
-    let resumeTimerAfterMaster = false;
+    let resumeSw = false;
+    let resumeTimer = false;
 
-    function updateMasterControls() {
-      let label;
+    function updateMaster() {
+      const label =
+        masterPaused
 
-      if (masterPaused) {
-        label =
-          "▶ Beide fortsetzen";
-      } else if (
-        stopwatchRunning ||
-        timerRunning
-      ) {
-        label =
-          "⏸ Beide pausieren";
-      } else {
-        label =
-          "▶ Beide starten";
-      }
+          ? "▶ Beide fortsetzen"
 
-      masterButtons.forEach(button => {
-        button.textContent = label;
-      });
+          : (
+              swRunning ||
+              timerRunning
 
-      stopwatchStartPause.disabled =
+                ? "⏸ Beide pausieren"
+
+                : "▶ Beide starten"
+            );
+
+      masterButtons.forEach(
+        button =>
+          button.textContent = label
+      );
+
+      $("swToggle").disabled =
         masterPaused;
 
-      timerStartPause.disabled =
+      $("timerToggle").disabled =
         masterPaused;
     }
 
     function startBoth() {
-      getAudioContext();
-      stopAlarm();
-
-      if (!stopwatchRunning) {
+      if (!swRunning) {
         startStopwatch();
       }
 
       if (!timerRunning) {
-        if (timerRemainingMs <= 0) {
-          timerRemainingMs =
-            getInputDuration();
-
-          renderTimer();
-        }
-
-        if (timerRemainingMs > 0) {
-          startTimer();
-        } else {
-          timerStatus.textContent =
-            "Zeit einstellen";
-        }
+        startTimer();
       }
 
-      updateMasterControls();
+      updateMaster();
     }
 
     function pauseBoth() {
-      resumeStopwatchAfterMaster =
-        stopwatchRunning;
+      resumeSw =
+        swRunning;
 
-      resumeTimerAfterMaster =
+      resumeTimer =
         timerRunning;
 
-      if (stopwatchRunning) {
-        pauseStopwatch();
-
-        stopwatchStatus.textContent =
-          "Gemeinsam pausiert";
+      if (swRunning) {
+        pauseStopwatch(
+          "Gemeinsam pausiert"
+        );
       }
 
       if (timerRunning) {
-        pauseTimer();
-
-        timerStatus.textContent =
-          "Gemeinsam pausiert";
+        pauseTimer(
+          "Gemeinsam pausiert"
+        );
       }
 
       stopAlarm();
 
       masterPaused = true;
 
-      updateMasterControls();
+      updateMaster();
     }
 
     function resumeBoth() {
       masterPaused = false;
 
-      updateMasterControls();
+      const startSwAgain =
+        resumeSw;
 
-      const shouldResumeStopwatch =
-        resumeStopwatchAfterMaster;
+      const startTimerAgain =
+        resumeTimer;
 
-      const shouldResumeTimer =
-        resumeTimerAfterMaster;
+      resumeSw = false;
+      resumeTimer = false;
 
-      resumeStopwatchAfterMaster = false;
-      resumeTimerAfterMaster = false;
-
-      if (shouldResumeStopwatch) {
+      if (startSwAgain) {
         startStopwatch();
       }
 
       if (
-        shouldResumeTimer &&
-        timerRemainingMs > 0
+        startTimerAgain &&
+        remainingMs > 0
       ) {
         startTimer();
       }
 
-      updateMasterControls();
+      updateMaster();
     }
 
-    function toggleMasterControl() {
-      getAudioContext();
+    function toggleMaster() {
+      audio();
 
       if (masterPaused) {
         resumeBoth();
-      } else if (
-        stopwatchRunning ||
+      }
+
+      else if (
+        swRunning ||
         timerRunning
       ) {
         pauseBoth();
-      } else {
+      }
+
+      else {
         startBoth();
       }
     }
 
-    masterButtons.forEach(button => {
-      button.addEventListener(
-        "click",
-        toggleMasterControl
-      );
-    });
+    /*
+      BUTTONS UND EINGABEN
+    */
 
+    $("swToggle").addEventListener(
+      "click",
+      () => {
+        if (masterPaused) {
+          return;
+        }
+
+        if (swRunning) {
+          pauseStopwatch();
+        } else {
+          startStopwatch();
+        }
+
+        updateMaster();
+      }
+    );
+
+    $("swReset").addEventListener(
+      "click",
+      () => {
+        resetStopwatch();
+        updateMaster();
+      }
+    );
+
+    $("alphaEnabled").addEventListener(
+      "change",
+      () => {
+        if (
+          swRunning &&
+          $("alphaEnabled").checked
+        ) {
+          startAlpha();
+        } else {
+          stopAlpha();
+        }
+      }
+    );
+
+    $("alphaVolume").addEventListener(
+      "input",
+      () => {
+        if (
+          alphaNodes &&
+          audioContext
+        ) {
+          const value =
+            Number(
+              $("alphaVolume").value
+            );
+
+          if (value <= 0) {
+            stopAlpha();
+          } else {
+            alphaNodes.master.gain
+              .setTargetAtTime(
+                value,
+                audioContext.currentTime,
+                0.05
+              );
+          }
+        }
+
+        else if (swRunning) {
+          startAlpha();
+        }
+      }
+    );
+
+    [
+      $("hours"),
+      $("minutes"),
+      $("seconds")
+    ].forEach(
+      input =>
+        input.addEventListener(
+          "input",
+          syncInputs
+        )
+    );
+
+    document
+      .querySelectorAll(
+        "[data-minutes]"
+      )
+      .forEach(
+        button =>
+          button.addEventListener(
+            "click",
+            () =>
+              adjustTimer(
+                button.dataset.minutes
+              )
+          )
+      );
+
+    $("timerToggle").addEventListener(
+      "click",
+      () => {
+        if (masterPaused) {
+          return;
+        }
+
+        if (timerRunning) {
+          pauseTimer();
+        } else {
+          startTimer();
+        }
+
+        updateMaster();
+      }
+    );
+
+    $("timerReset").addEventListener(
+      "click",
+      () => {
+        resetTimer();
+        updateMaster();
+      }
+    );
+
+    $("alarmStop").addEventListener(
+      "click",
+      stopAlarm
+    );
+
+    $("notifyEnabled").addEventListener(
+      "change",
+      changeNotificationSetting
+    );
+
+    masterButtons.forEach(
+      button =>
+        button.addEventListener(
+          "click",
+          toggleMaster
+        )
+    );
+
+    /*
+      STARTZUSTAND
+    */
+
+    const savedNotify =
+      localStorage.getItem(
+        "timerNotify"
+      ) === "true";
+
+    $("notifyEnabled").checked =
+      savedNotify &&
+      "Notification" in window &&
+      Notification.permission ===
+        "granted";
+
+    updateNotifyStatus();
     renderStopwatch();
     renderTimer();
-    updateMasterControls();
+    updateMaster();
   </script>
 </body>
 </html>
