@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="theme-color" content="#2f2f2f">
+  <title>Lern-Timer Begleit-App</title>
+  <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="stylesheet" href="companion.css">
+</head>
+<body>
+  <main class="app">
+    <header><div><h1>Lern-Timer</h1><p>Windows-Begleit-App</p></div><button class="soft hidden" id="installButton">App installieren</button></header>
+    <section class="connect-card">
+      <label>Sync-Code aus Notion</label>
+      <div class="connect-row"><input id="codeInput" type="text" autocomplete="off" placeholder="Code hier einfügen"><button class="primary" id="connectButton">Verbinden</button></div>
+      <div class="head"><span class="status" id="connectionStatus">Nicht verbunden</span><button class="link-button" id="disconnectButton">Trennen</button></div>
+    </section>
+    <section class="card"><div class="head"><h2>Stoppuhr</h2><span class="status" id="swStatus">—</span></div><div class="display"><span id="swMain">00:00:00</span><span class="fraction" id="swFraction">.00</span></div></section>
+    <section class="card"><div class="head"><h2>Timer</h2><span class="status" id="timerStatus">—</span></div><div class="display" id="timerDisplay">00:00:00</div><p class="note" id="durationInfo">Warte auf Daten aus Notion.</p></section>
+    <section class="notify-card">
+      <div class="head"><label class="toggle"><input id="notifyEnabled" type="checkbox">Windows-Benachrichtigung</label><span class="status" id="notifyStatus">Aus</span></div>
+      <p class="note">Die App darf minimiert sein, muss für die lokale Benachrichtigung aber geöffnet bleiben.</p>
+    </section>
+  </main>
+  <script src="companion.js"></script>
+</body>
+</html>
